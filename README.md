@@ -1,17 +1,16 @@
-PHP-CPP
-=======
+PHP-CPP-LEGACY
+==============
 
-The PHP-CPP library is a C++ library for developing PHP extensions. It offers a collection
-of well documented and easy-to-use classes that can be used and extended to build native
-extensions for PHP. The full documentation can be found on http://www.php-cpp.com.
+The PHP-CPP-LEGACY is a clone of the PHP-CPP library that can be used for PHP5 
+deployments. The original PHP-CPP will be further developed to support just PHP7.
 
 ABOUT
 =====
 
-PHP-CPP is created and maintained by Copernica (www.copernica.com). We write 
-our code mostly in PHP and C++ and needed an effective way 
-to combine these two languages. That's where PHP-CPP comes in.
-Do you appreciate our work and are you looking for other high quality solutions? 
+PHP-CPP-LEGACY is created and maintained by Copernica (www.copernica.com). We write 
+our code mostly in PHP and C++ and needed an effective way to combine these two 
+languages. That's where PHP-CPP comes in. Do you appreciate our work and are you 
+looking for other high quality solutions? 
 
 Then check out our other solutions:
 
