@@ -1,7 +1,7 @@
 PHP-CPP-LEGACY
 ==============
 
-The PHP-CPP-LEGACY is a clone of the PHP-CPP library that can be used for PHP5 
+The PHP-CPP-LEGACY library is a fork of the PHP-CPP library that can be used for PHP5 
 deployments. The original PHP-CPP will be further developed to support just PHP7.
 
 ABOUT
