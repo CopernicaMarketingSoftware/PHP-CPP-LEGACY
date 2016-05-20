@@ -40,6 +40,14 @@
 #include <SAPI.h>
 
 /**
+ *  We don't compile for php7 just yet
+ */
+#if PHP_VERSION_ID >= 70000
+#   error "This library is only for legacy versions of PHP, use the regular PHP-CPP instead."
+#endif
+
+
+/**
  *  Macro to convert results to success status
  */
 #define BOOL2SUCCESS(b) ((b) ? SUCCESS : FAILURE)
