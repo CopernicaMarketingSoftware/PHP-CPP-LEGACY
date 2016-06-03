@@ -20,6 +20,18 @@
 namespace Php {
 
 /**
+ *  Callback function for the zend engine
+ *
+ *  These functions can be directly set as handlers
+ *  in the zend engine and do all the necessary conversion
+ *  between zend and PHP-CPP structures.
+ *
+ *  @param  execute_data    Data about the current call stack
+ *  @param  return_value    Holder for the return value
+ */
+using ZendCallback = void(*)(int ht, struct _zval_struct *return_value, struct _zval_struct **return_value_ptr, struct _zval_struct *this_ptr, int return_value_used);
+
+/**
  *  A couple of predefined native callback functions that can be registered.
  *  These are functions that optional accept a Request and/or Parameters object,
  *  and that either return void or a Value object.
@@ -168,6 +180,24 @@ protected:
      *  is not implemented
      */
     static void notImplemented();
+
+
+    /**
+     *  Add a method to the class
+     *
+     *  The method will be accessible as one of the class methods in your PHP
+     *  code. When the method is called, it will automatically be forwarded
+     *  to the C++ implementation. The flags can be Php::Public, Php::Protected
+     *  or Php::Private (using private methods can be useful if you for example
+     *  want to make the __construct() function private). The access-modified
+     *  flag can be bitwise combined with the flag Php::Final or Php::Abstract).
+     *
+     *  @param  name        Name of the method
+     *  @param  method      The actual method
+     *  @param  flags       Optional flags
+     *  @param  args        Description of the supported arguments
+     */
+    void method(const char *name, ZendCallback callback, int flags = 0, const Arguments &args = {});
 
     /**
      *  Add a method to the class

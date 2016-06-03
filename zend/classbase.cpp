@@ -49,6 +49,26 @@ void ClassBase::notImplemented()
 
 /**
  *  Add a method to the class
+ *
+ *  The method will be accessible as one of the class methods in your PHP
+ *  code. When the method is called, it will automatically be forwarded
+ *  to the C++ implementation. The flags can be Php::Public, Php::Protected
+ *  or Php::Private (using private methods can be useful if you for example
+ *  want to make the __construct() function private). The access-modified
+ *  flag can be bitwise combined with the flag Php::Final or Php::Abstract).
+ *
+ *  @param  name        Name of the method
+ *  @param  method      The actual method
+ *  @param  flags       Optional flags
+ *  @param  args        Description of the supported arguments
+ */
+void ClassBase::method(const char *name, ZendCallback callback, int flags, const Arguments &args)
+{
+    _impl->method(name, callback, flags, args);
+}
+
+/**
+ *  Add a method to the class
  *  @param  name        Name of the method
  *  @param  method      The actual method
  *  @param  flags       Optional flags

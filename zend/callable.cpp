@@ -80,10 +80,14 @@ void Callable::invoke(INTERNAL_FUNCTION_PARAMETERS)
  */
 void Callable::initialize(zend_function_entry *entry, const char *classname, int flags) const
 {
+    // if we already have a compatible callback we register it
+    // otherwise we use our own callback that retrieves the callable
+    if (_callback)  entry->handler = _callback;
+    else            entry->handler = &Callable::invoke;
+
     // fill the members of the entity, and hide a pointer to the current object in the name
     entry->fname = (const char *)_ptr;
-    entry->handler = &Callable::invoke;
-    entry->arg_info = _argv;
+    entry->arg_info = _argv.get();
     entry->num_args = _argc;
     entry->flags = flags;
 

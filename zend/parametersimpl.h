@@ -39,11 +39,19 @@ public:
             emplace_back(*arg);
         }
     }
-    
+
     /**
-     *  Destructor
+     *  Do _not_ add a virtual destructor here.
+     *
+     *  We are extending a vector, which does not itself
+     *  have a virtual destructor, so destructing through
+     *  a pointer to this vector has no effect.
+     *
+     *  By adding a virtual destructor we create a vtable,
+     *  which makes the class bigger, causing slicing and
+     *  then we are actually introducing the problem that
+     *  we are trying to avoid!
      */
-    virtual ~ParametersImpl() {}
 };
 
 /**

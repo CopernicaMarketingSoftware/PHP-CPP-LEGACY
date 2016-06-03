@@ -21,6 +21,14 @@ class NativeFunction : public Callable
 public:
     /**
      *  Constructor
+     *
+     *  @param  name            Function name
+     *  @param  function        The native C function
+     */
+    NativeFunction(const char *name, ZendCallback function, const Arguments &arguments = {}) : Callable(function, name, arguments) {}
+
+    /**
+     *  Constructor
      *  @param  name            Function name
      *  @param  function        The native C function
      */

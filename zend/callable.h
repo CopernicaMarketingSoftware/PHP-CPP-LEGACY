@@ -21,15 +21,17 @@ class Callable
 public:
     /**
      *  Constructor
+     *
+     *  @param  callback    The callback to invoke
      *  @param  name        Function or method name
      *  @param  arguments   Information about the arguments
      */
-    Callable(const char *name, const Arguments &arguments = {}) : _ptr(this, name)
+    Callable(ZendCallback callback, const char *name, const Arguments &arguments = {}) :
+        _callback(callback),
+        _ptr(this, name),
+        _argc(arguments.size()),
+        _argv(new zend_arg_info[_argc + 1])
     {
-        // construct vector for arguments
-        _argc = arguments.size();
-        _argv = new zend_arg_info[_argc+1];
-        
         // the first record is initialized with information about the function,
         // so we skip that here
         int i=1;
@@ -44,6 +46,15 @@ public:
             fill(&_argv[i++], *it);
         }
     }
+
+    /**
+     *  Constructor
+     *
+     *  @param  name        Function or method name
+     *  @param  arguments   Information about the arguments
+     */
+    Callable(const char *name, const Arguments &arguments = {}) :
+        Callable(nullptr, name, arguments) {}
     
     /**
      *  Copy constructor
@@ -65,19 +76,12 @@ public:
         _return(that._return),
         _required(that._required),
         _argc(that._argc),
-        _argv(that._argv) 
-    {
-        // invalidate other object
-        that._argv = nullptr;
-    }
+        _argv(std::move(that._argv)) {}
 
     /**
      *  Destructor
      */
-    virtual ~Callable()
-    {
-        if (_argv) delete[] _argv;
-    }
+    virtual ~Callable() = default;
     
     /**
      *  Method that gets called every time the function is executed
@@ -105,6 +109,13 @@ public:
 
 
 protected:
+
+    /**
+     *  The callback to invoke
+     *  @var    ZendCallback
+     */
+    ZendCallback _callback;
+
     /**
      *  Hidden pointer to the name and the function
      *  @var    HiddenPointer
@@ -131,9 +142,9 @@ protected:
 
     /**
      *  The arguments
-     *  @var zend_arg_info[]
+     *  @var std::unique_ptr<zend_arg_info[]>
      */
-    zend_arg_info *_argv = nullptr;
+    std::unique_ptr<zend_arg_info[]> _argv;
     
     /**
      *  Private helper method to fill an argument object

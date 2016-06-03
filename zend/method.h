@@ -20,6 +20,16 @@ class Method : public Callable
 {
 public:
     /**
+     *  Constructor
+     *
+     *  @param  name            Method name
+     *  @param  callback        Callback to invoke
+     *  @param  flags           Access flags
+     *  @param  args            Argument description
+     */
+    Method(const char *name, ZendCallback callback, int flags, const Arguments &args) : Callable(callback, name, args), _flags(flags) {}
+
+    /**
      *  Constructor 
      * 
      *  @param  name            Method name
