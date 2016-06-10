@@ -1,8 +1,13 @@
 PHP-CPP-LEGACY
 ==============
 
-The PHP-CPP-LEGACY library is a fork of the PHP-CPP library that can be used for PHP5 
-deployments. The original PHP-CPP will be further developed to support just PHP7.
+The PHP-CPP-LEGACY library is a fork of the [PHP-CPP library](https://github.com/CopernicaMarketingSoftware/PHP-CPP) 
+that can be used for old PHP5 deployments. If you no longer use PHP 5.*, we recommend
+using the master [PHP-CPP library](https://github.com/CopernicaMarketingSoftware/PHP-CPP) instead.
+
+The PHP-CPP and PHP-CPP-LEGACY library have an almost identical API. This means that you
+can easily port C++ extensions that you wrote for PHP5 to PHP7 (and the other way around).
+
 
 ABOUT
 =====
