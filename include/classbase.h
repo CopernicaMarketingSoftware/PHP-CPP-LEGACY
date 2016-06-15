@@ -29,7 +29,7 @@ namespace Php {
  *  @param  execute_data    Data about the current call stack
  *  @param  return_value    Holder for the return value
  */
-using ZendCallback = void(*)(int ht, struct _zval_struct *return_value, struct _zval_struct **return_value_ptr, struct _zval_struct *this_ptr, int return_value_used);
+using ZendCallback = void(*)(INTERNAL_FUNCTION_PARAMETERS);
 
 /**
  *  A couple of predefined native callback functions that can be registered.

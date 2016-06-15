@@ -22,8 +22,11 @@ namespace Php {
  */
 Base *ZendCallable::instance(struct _zval_struct *this_ptr)
 {
+    // we need the tsrm_ls variable
+    TSRMLS_FETCH();
+
     // find the object implementation and retrieve the base object
-    return ObjectImpl::find(this_ptr)->object();
+    return ObjectImpl::find(this_ptr TSRMLS_CC)->object();
 }
 
 /**
@@ -36,14 +39,14 @@ Base *ZendCallable::instance(struct _zval_struct *this_ptr)
  */
 bool ZendCallable::valid(int provided, struct _zval_struct *return_value)
 {
+    // we need the tsrm_ls variable
+    TSRMLS_FETCH();
+
     // how many parameters do we need as a bare minimum?
-    auto required = EG(current_execute_data)->function_state.function->common.required_num_args;
+    int required = EG(current_execute_data)->function_state.function->common.required_num_args;
 
     // if we have the required minimum number of arguments there is no problem
     if (provided >= required) return true;
-
-    // retrieve the TSRMLS structure
-    TSRMLS_FETCH()
 
     // retrieve the function name to display the error
     auto *name = get_active_function_name(TSRMLS_C);
@@ -68,7 +71,7 @@ bool ZendCallable::valid(int provided, struct _zval_struct *return_value)
 Parameters ZendCallable::parameters(int provided, struct _zval_struct *this_ptr)
 {
     // retrieve the TSRMLS structure
-    TSRMLS_FETCH()
+    TSRMLS_FETCH();
 
     // parse and return the parameters
     return ParametersImpl{ this_ptr, provided TSRMLS_CC };
@@ -81,8 +84,11 @@ Parameters ZendCallable::parameters(int provided, struct _zval_struct *this_ptr)
  */
 void ZendCallable::handle(Exception &exception)
 {
+    // we need the tsrm_ls variable
+    TSRMLS_FETCH();
+
     // pass it on to the exception handler
-    process(exception);
+    process(exception TSRMLS_CC);
 }
 
 /**
