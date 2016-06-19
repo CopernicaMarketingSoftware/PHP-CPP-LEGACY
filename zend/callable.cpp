@@ -27,9 +27,16 @@ void Callable::invoke(INTERNAL_FUNCTION_PARAMETERS)
 {
     // find the function name
     const char *name = get_active_function_name(TSRMLS_C);
-    
+
     // uncover the hidden pointer inside the function name
     Callable *callable = HiddenPointer<Callable>(name);
+
+    // if we already have a callback we call it
+    if (callable->_callback)
+    {
+        (*callable->_callback)(ht, return_value, return_value_ptr, this_ptr, return_value_used);
+        return;
+    }
 
     // check if sufficient parameters were passed (for some reason this check
     // is not done by Zend, so we do it here ourselves)
@@ -70,20 +77,17 @@ void Callable::invoke(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  *  Fill a function entry
- * 
- *  This method is called when the extension is registering itself, when the 
+ *
+ *  This method is called when the extension is registering itself, when the
  *  function or method introces himself
- * 
+ *
  *  @param  entry       Entry to be filled
  *  @param  classname   Optional class name
  *  @param  flags       Is this a public property?
  */
 void Callable::initialize(zend_function_entry *entry, const char *classname, int flags) const
 {
-    // if we already have a compatible callback we register it
-    // otherwise we use our own callback that retrieves the callable
-    if (_callback)  entry->handler = _callback;
-    else            entry->handler = &Callable::invoke;
+    entry->handler = &Callable::invoke;
 
     // fill the members of the entity, and hide a pointer to the current object in the name
     entry->fname = (const char *)_ptr;
@@ -106,7 +110,7 @@ void Callable::initialize(zend_arg_info *info, const char *classname) const
     // up until php 5.3, the first info object is filled with alternative information,
     // later it is casted to a zend_internal_function object
     auto *finfo = (zend_internal_function_info *)info;
-    
+
     // fill in all the members, note that return reference is false by default,
     // because we do not support returning references in PHP-CPP, although Zend
     // engine allows it. Inside the name we hide a pointer to the current object
@@ -120,7 +124,7 @@ void Callable::initialize(zend_arg_info *info, const char *classname) const
 
     // we do not support return-by-reference
     finfo->return_reference = false;
- 
+
 # if PHP_VERSION_ID >= 50600
     // since php 5.6 there are _allow_null and _is_variadic properties. It's
     // not exactly clear what they do (@todo find this out) so for now we set
