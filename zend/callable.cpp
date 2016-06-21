@@ -31,13 +31,6 @@ void Callable::invoke(INTERNAL_FUNCTION_PARAMETERS)
     // uncover the hidden pointer inside the function name
     Callable *callable = HiddenPointer<Callable>(name);
 
-    // if we already have a callback we call it
-    if (callable->_callback)
-    {
-        (*callable->_callback)(ht, return_value, return_value_ptr, this_ptr, return_value_used);
-        return;
-    }
-
     // check if sufficient parameters were passed (for some reason this check
     // is not done by Zend, so we do it here ourselves)
     if (ZEND_NUM_ARGS() < callable->_required)
@@ -87,7 +80,10 @@ void Callable::invoke(INTERNAL_FUNCTION_PARAMETERS)
  */
 void Callable::initialize(zend_function_entry *entry, const char *classname, int flags) const
 {
-    entry->handler = &Callable::invoke;
+    // if we already have a compatible callback we register it
+    // otherwise we use our own callback that retrieves the callable
+    if (_callback)  entry->handler = (void(*)(INTERNAL_FUNCTION_PARAMETERS))_callback;
+    else            entry->handler = &Callable::invoke;
 
     // fill the members of the entity, and hide a pointer to the current object in the name
     entry->fname = (const char *)_ptr;
