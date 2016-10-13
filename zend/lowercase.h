@@ -65,10 +65,10 @@ public:
     }
     
     /**
-     *  Cast to a const char *
-     *  @return const char *
+     *  Cast to a char *
+     *  @return char *
      */
-    operator const char * () 
+    operator char * () 
     {
         // expose member
         return _name;
