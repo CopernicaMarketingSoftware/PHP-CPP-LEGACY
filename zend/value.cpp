@@ -22,9 +22,10 @@
  *
  *
  *  @author Emiel Bruijntjes <emiel.bruijntjes@copernica.com>
- *  @copyright 2013, 2014 Copernica BV
+ *  @copyright 2013 - 2016 Copernica BV
  */
 #include "includes.h"
+#include "lowercase.h"
 
 /**
  *  Set up namespace
@@ -851,10 +852,10 @@ bool Value::isCallable(const char *name)
     zend_class_entry *ce = Z_OBJCE_P(_val);
     
     // length of the name
-    size_t len = strlen(name);
+    size_t len = ::strlen(name);
 
     // convert name to lowercase
-    LowerCase methodname(name);
+    LowerCase methodname(name, len);
     
     // check if thus function exists
     if (zend_hash_exists(&ce->function_table, methodname, len+1)) return true;

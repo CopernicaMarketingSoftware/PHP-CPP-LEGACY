@@ -33,9 +33,10 @@ public:
     /**
      *  Constructor
      *  @param  name        the original name
+     *  @param  size        size of the name
      */
-    LowerCase(const char *name) : 
-        _name(zend_str_tolower_dup(name)) {}
+    LowerCase(const char *name, size_t size) : 
+        _name(zend_str_tolower_dup(name, size)) {}
         
     /**
      *  No copy'ing or moving
