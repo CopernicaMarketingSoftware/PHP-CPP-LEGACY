@@ -864,7 +864,7 @@ bool Value::isCallable(const char *name)
     if (Z_OBJ_HT_P(_val)->get_method == nullptr) return false;
     
     // get the function
-    union _zend_function *func = Z_OBJ_HT_P(_val)->get_method(&Z_OBJ_P(_val), methodname, nullptr);
+	auto *func = Z_OBJ_HT_P(_val)->get_method(&_val, methodname, len, nullptr TSRMLS_CC);
     
     // if function does not exist, we do not have to check further
     if (func == nullptr) return false;

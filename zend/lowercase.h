@@ -27,7 +27,7 @@ private:
      *  The lowercase name
      *  @var char *
      */
-    const char *_name;
+    char *_name;
 
 public:
     /**
