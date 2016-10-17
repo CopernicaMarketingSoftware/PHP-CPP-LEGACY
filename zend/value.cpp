@@ -879,7 +879,6 @@ bool Value::isCallable(const char *name)
     bool result = func->common.scope == zend_ce_closure && (len == sizeof(ZEND_INVOKE_FUNC_NAME)-1) && memcmp(methodname, ZEND_INVOKE_FUNC_NAME, sizeof(ZEND_INVOKE_FUNC_NAME)-1) == 0;
         
     // clean resources
-    efree((char*)((zend_internal_function*)func)->function_name);
     efree(func);
     
     // done

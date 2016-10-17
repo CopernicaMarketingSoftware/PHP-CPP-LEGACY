@@ -15,7 +15,7 @@
  *  this class.
  *
  *  @author Emiel Bruijntjes <emiel.bruijntjes@copernica.com>
- *  @copyright 2013 Copernica BV
+ *  @copyright 2013 - 2016 Copernica BV
  */
 
 /**
@@ -1034,7 +1034,7 @@ public:
     {
         // store arguments
         Value vargs[] = { static_cast<Value>(args)... };
-
+        
         // array of parameters
         _zval_struct **params[sizeof...(Args)];
         for(unsigned i=0; i < sizeof...(Args); i++) {params[i] = &vargs[i]._val;}
