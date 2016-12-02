@@ -30,6 +30,13 @@
 //#define MUTEX_T pthread_mutex_t *
 
 /**
+ *  Are we compiling with ZTS (zend thread safety)?
+ */
+#ifdef ZTS
+#   include <TSRM.h>
+#endif
+
+/**
  *  PHP includes
  */
 #pragma GCC system_header

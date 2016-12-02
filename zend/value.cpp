@@ -847,7 +847,10 @@ bool Value::isCallable(const char *name)
 {
     // this only makes sense if we are an object
     if (!isObject()) return false;
-    
+
+    // make sure the zend thread safety variable is available
+    TSRMLS_FETCH();
+
     // get the class properties
     zend_class_entry *ce = Z_OBJCE_P(_val);
     
