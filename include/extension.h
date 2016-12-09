@@ -210,9 +210,9 @@ private:
     /**
      *  The implementation object
      *
-     *  @var ExtensionImpl
+     *  @var std::unique_ptr<ExtensionImpl>
      */
-    ExtensionImpl *_impl;
+    std::unique_ptr<ExtensionImpl> _impl;
 
     /**
      *  Ini entry defined by the extension

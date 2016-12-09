@@ -23,11 +23,7 @@ Extension::Extension(const char *name, const char *version, int apiversion) :
 /**
  *  Destructor
  */
-Extension::~Extension()
-{
-    // get rid of the implementation object
-    delete _impl;
-}
+Extension::~Extension() = default;
 
 /**
  *  Register a function to be called when the PHP engine is ready
