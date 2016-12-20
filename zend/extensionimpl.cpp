@@ -261,11 +261,9 @@ ExtensionImpl::~ExtensionImpl()
     // remove from the array
     name2extension.erase(_entry.name);
     
-    // deallocate the php.ini entries
-    if (_ini) delete[] _ini;
-    
     // deallocate functions
-    if (_entry.functions) delete[] _entry.functions;
+    delete[] _entry.functions;
+    _entry.functions = nullptr;
 }
 
 /**
@@ -345,7 +343,7 @@ zend_module_entry *ExtensionImpl::module()
 bool ExtensionImpl::initialize(int module_number TSRMLS_DC)
 {
     // array contains ini settings
-    _ini = new zend_ini_entry[_data->iniVariables()+1];
+    _ini.reset(new zend_ini_entry[_data->iniVariables()+1]);
 
     // the entry that we're filling
     int i = 0;
@@ -367,7 +365,7 @@ bool ExtensionImpl::initialize(int module_number TSRMLS_DC)
     memset(&_ini[i], 0, sizeof(zend_ini_entry));
 
     // register ini entries in Zend core
-    zend_register_ini_entries(_ini, module_number TSRMLS_CC);
+    zend_register_ini_entries(_ini.get(), module_number TSRMLS_CC);
 
     // the constants are registered after the module is ready
     _data->constants([module_number TSRMLS_CC](const std::string &prefix, Constant &c) {
@@ -409,10 +407,7 @@ bool ExtensionImpl::shutdown(int module_number TSRMLS_DC)
     zend_unregister_ini_entries(module_number TSRMLS_CC);
 
     // destruct the ini entries
-    if (_ini) delete[] _ini;
-
-    // forget the ini entries
-    _ini = nullptr;
+    _ini.reset();
 
     // shutdown the functor class
     Functor::shutdown(TSRMLS_C);

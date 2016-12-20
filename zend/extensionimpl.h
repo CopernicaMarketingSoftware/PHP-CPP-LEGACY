@@ -34,9 +34,9 @@ protected:
     /**
      *  The .ini entries
      *  
-     *  @var zend_ini_entry
+     *  @var std::unique_ptr<zend_ini_entry[]>
      */
-    zend_ini_entry *_ini = nullptr;
+    std::unique_ptr<zend_ini_entry[]> _ini;
     
 public:
     /**
