@@ -17,8 +17,8 @@
 #   installed in the default directory, you can change that here.
 #
 
-PHP_CONFIG				=	php-config
-
+PHP_CONFIG			=	php-config
+UNAME 				:= 	$(shell uname)
 
 #
 #   Installation directory
@@ -30,7 +30,14 @@ PHP_CONFIG				=	php-config
 #   and /usr/local/lib. You can of course change it to whatever suits you best
 #
 
-INSTALL_PREFIX			=	/usr
+# Since OSX 10.10 Yosemite, /usr/include gives problem
+# So, let's switch to /usr/local as default instead.
+ifeq ($(UNAME), Darwin)
+  INSTALL_PREFIX		=	/usr/local
+else
+  INSTALL_PREFIX		=	/usr
+endif
+
 INSTALL_HEADERS			=	${INSTALL_PREFIX}/include
 INSTALL_LIB				=	${INSTALL_PREFIX}/lib
 
@@ -94,7 +101,7 @@ endif
 #   you want to leave that flag out on production servers).
 #
 
-COMPILER_FLAGS			=	-Wall -c -std=c++11 -fvisibility=hidden -MD -DBUILDING_PHPCPP -Wno-write-strings
+COMPILER_FLAGS			=	-Wall -c -std=c++11 -fvisibility=hidden -DBUILDING_PHPCPP -Wno-write-strings -MD
 SHARED_COMPILER_FLAGS	=	-fpic
 STATIC_COMPILER_FLAGS	=
 PHP_COMPILER_FLAGS		=	${COMPILER_FLAGS} `${PHP_CONFIG} --includes`
@@ -109,7 +116,7 @@ PHP_COMPILER_FLAGS		=	${COMPILER_FLAGS} `${PHP_CONFIG} --includes`
 #   to the linker flags
 #
 
-LINKER_FLAGS			=	-shared
+LINKER_FLAGS			=	-shared -undefined dynamic_lookup
 PHP_LINKER_FLAGS		=	${LINKER_FLAGS} `${PHP_CONFIG} --ldflags`
 
 
@@ -176,7 +183,7 @@ phpcpp: ${PHP_SHARED_LIBRARY} ${PHP_STATIC_LIBRARY}
 	@echo "Build complete."
 
 ${PHP_SHARED_LIBRARY}: shared_directories ${COMMON_SHARED_OBJECTS} ${PHP_SHARED_OBJECTS}
-	${LINKER} ${PHP_LINKER_FLAGS} -Wl,-soname,libphpcpp.so.$(SONAME) -o $@ ${COMMON_SHARED_OBJECTS} ${PHP_SHARED_OBJECTS}
+	${LINKER} ${PHP_LINKER_FLAGS} -Wl,-install_name,libphpcpp.so.$(SONAME) -o $@ ${COMMON_SHARED_OBJECTS} ${PHP_SHARED_OBJECTS}
 
 ${PHP_STATIC_LIBRARY}: static_directories ${COMMON_STATIC_OBJECTS} ${PHP_STATIC_OBJECTS}
 	${ARCHIVER} $@ ${COMMON_STATIC_OBJECTS} ${PHP_STATIC_OBJECTS}
@@ -211,6 +218,7 @@ ${PHP_STATIC_OBJECTS}:
 
 install:
 	${MKDIR} ${INSTALL_HEADERS}/phpcpp
+	${MKDIR} ${INSTALL_LIB}
 	${CP} phpcpp.h ${INSTALL_HEADERS}
 	${CP} include/*.h ${INSTALL_HEADERS}/phpcpp
 	if [ -e ${PHP_SHARED_LIBRARY} ]; then \
@@ -224,4 +232,8 @@ install:
 	if `which ldconfig`; then \
 		sudo ldconfig; \
 	fi
+
+uninstall:
+	${RM} ${INSTALL_HEADERS}/phpcpp*
+	${RM} ${INSTALL_LIB}/libphpcpp.*
 
