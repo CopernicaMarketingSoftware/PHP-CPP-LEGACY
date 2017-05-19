@@ -52,6 +52,13 @@ INSTALL_LIB				=	${INSTALL_PREFIX}/lib
 SONAME					=	1.5
 VERSION					=	1.5.7
 
+# macOS is using install_name option instead of soname
+ifeq ($(UNAME), Darwin)
+  SONAME_OPTION		=	install_name
+else
+  SONAME_OPTION		=	soname
+endif
+
 
 #
 #   Name of the target library name and config-generator
@@ -112,11 +119,12 @@ PHP_COMPILER_FLAGS		=	${COMPILER_FLAGS} `${PHP_CONFIG} --includes`
 #   Just like the compiler, the linker can have flags too. The default flag
 #   is probably the only one you need.
 #
-#   Are you compiling on OSX? You may have to append the option "-undefined dynamic_lookup"
-#   to the linker flags
-#
 
-LINKER_FLAGS			=	-shared -undefined dynamic_lookup
+LINKER_FLAGS		=	-shared
+ifeq ($(UNAME), Darwin)
+  LINKER_FLAGS		+= -undefined dynamic_lookup
+endif
+
 PHP_LINKER_FLAGS		=	${LINKER_FLAGS} `${PHP_CONFIG} --ldflags`
 
 
@@ -183,7 +191,7 @@ phpcpp: ${PHP_SHARED_LIBRARY} ${PHP_STATIC_LIBRARY}
 	@echo "Build complete."
 
 ${PHP_SHARED_LIBRARY}: shared_directories ${COMMON_SHARED_OBJECTS} ${PHP_SHARED_OBJECTS}
-	${LINKER} ${PHP_LINKER_FLAGS} -Wl,-install_name,libphpcpp.so.$(SONAME) -o $@ ${COMMON_SHARED_OBJECTS} ${PHP_SHARED_OBJECTS}
+	${LINKER} ${PHP_LINKER_FLAGS} -Wl,-$(SONAME_OPTION),libphpcpp.so.$(SONAME) -o $@ ${COMMON_SHARED_OBJECTS} ${PHP_SHARED_OBJECTS}
 
 ${PHP_STATIC_LIBRARY}: static_directories ${COMMON_STATIC_OBJECTS} ${PHP_STATIC_OBJECTS}
 	${ARCHIVER} $@ ${COMMON_STATIC_OBJECTS} ${PHP_STATIC_OBJECTS}
