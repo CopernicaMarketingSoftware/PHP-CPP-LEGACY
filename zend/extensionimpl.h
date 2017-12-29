@@ -37,6 +37,12 @@ protected:
      *  @var std::unique_ptr<zend_ini_entry[]>
      */
     std::unique_ptr<zend_ini_entry[]> _ini;
+
+    /**
+     *  Ini entry defined by the extension
+     *  @var    list
+     */
+    std::list<std::shared_ptr<Ini>> _ini_entries;
     
 public:
     /**
@@ -71,6 +77,35 @@ public:
      */
     const char *version() const;
     
+    /**
+     *  Add a ini entry to the extension implementation by moving it
+     *  @param  ini         The php.ini setting
+     *  @return Extension   Same object to allow chaining
+     */
+    void add(Ini &&ini);
+
+    /**
+     *  Add a ini entry to the extension implementation by copying it
+     *  @param  ini         The php.ini setting
+     *  @param  Extension   Same object to allow chaining
+     */
+    void add(const Ini &ini);
+
+    /**
+     *  The total number of php.ini variables
+     *  @return size_t
+     */
+    size_t iniVariables() const;
+
+    /**
+     *  Apply a callback to each php.ini variable
+     *
+     *  The callback will be called with a reference to the ini variable.
+     *
+     *  @param  callback
+     */
+    void iniVariables(const std::function<void(Ini &ini)> &callback);
+     
     /** 
      *  Is the object locked (true) or is it still possible to add more functions,
      *  classes and other elements to it?

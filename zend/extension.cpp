@@ -106,6 +106,57 @@ bool Extension::locked() const
 }
 
 /**
+ *  Add a ini entry to the extension by moving it
+ *  @param  ini         The php.ini setting
+ *  @return Extension   Same object to allow chaining
+ */
+Extension &Extension::add(Ini &&ini)
+{
+    // pass on to the implementation
+    _impl->add(std::move(ini));
+    
+    // allow chaining
+    return *this;
+}
+
+/**
+ *  Add a ini entry to the extension by copying it
+ *  @param  ini         The php.ini setting
+ *  @param  Extension   Same object to allow chaining
+ */
+Extension &Extension::add(const Ini &ini)
+{
+    // pass on to the implementation
+    _impl->add(ini);
+    
+    // allow chaining
+    return *this;
+}
+
+/**
+ *  The total number of php.ini variables
+ *  @return size_t
+ */
+size_t Extension::iniVariables() const
+{
+    // pass on to the implementation
+    return _impl->iniVariables();
+}
+
+/**
+ *  Apply a callback to each php.ini variable
+ *
+ *  The callback will be called with a reference to the ini variable.
+ *
+ *  @param  callback
+ */
+void Extension::iniVariables(const std::function<void(Ini &ini)> &callback)
+{
+    // pass on to the implementation
+    _impl->iniVariables(callback);
+}
+
+/**
  *  End of namespace
  */
 }

@@ -343,23 +343,23 @@ zend_module_entry *ExtensionImpl::module()
 bool ExtensionImpl::initialize(int module_number TSRMLS_DC)
 {
     // array contains ini settings
-    _ini.reset(new zend_ini_entry[_data->iniVariables()+1]);
+    _ini.reset(new zend_ini_entry[_ini_entries.size()+1]);
 
     // the entry that we're filling
     int i = 0;
 
     // Fill the php.ini entries
-    _data->iniVariables([this, &i, module_number](Ini &ini) {
-    
+    for (auto ini : _ini_entries)
+    {
         // initialize the function
         zend_ini_entry *entry = &_ini[i];
         
         // fill the property
-        ini.fill(entry, module_number);
+        ini->fill(entry, module_number);
         
         // move on to the next iteration
-        i++;
-    });
+        ++i;
+    }
 
     // last entry should be set to all zero's
     memset(&_ini[i], 0, sizeof(zend_ini_entry));
@@ -387,7 +387,7 @@ bool ExtensionImpl::initialize(int module_number TSRMLS_DC)
     // remember that we're initialized (when you use "apache reload" it is 
     // possible that the processStartup() method is called more than once)
     _locked = true;
-    
+
     // is the callback registered?
     if (_onStartup) _onStartup();
 
@@ -408,6 +408,9 @@ bool ExtensionImpl::shutdown(int module_number TSRMLS_DC)
 
     // destruct the ini entries
     _ini.reset();
+    
+    // rest the ini_entries
+    _ini_entries.clear();
 
     // shutdown the functor class
     Functor::shutdown(TSRMLS_C);
@@ -420,6 +423,57 @@ bool ExtensionImpl::shutdown(int module_number TSRMLS_DC)
     
     // done
     return true;
+}
+
+/**
+ *  Add a ini entry to the extension implementation by moving it
+ *  @param  ini         The php.ini setting
+ *  @return Extension   Same object to allow chaining
+ */
+void ExtensionImpl::add(Ini &&ini)
+{
+    // skip when locked
+    if (_locked) return;
+    
+    // and add it to the list of classes
+    _ini_entries.emplace_back(new Ini(std::move(ini)));
+}
+
+/**
+ *  Add a ini entry to the extension implementation by copying it
+ *  @param  ini         The php.ini setting
+ *  @param  Extension   Same object to allow chaining
+ */
+void ExtensionImpl::add(const Ini &ini)
+{
+    // skip when locked
+    if (_locked) return;
+
+    // and add it to the list of classes
+    _ini_entries.emplace_back(new Ini(ini));
+}
+
+
+/**
+ *  The total number of php.ini variables
+ *  @return size_t
+ */
+size_t ExtensionImpl::iniVariables() const
+{
+    return _ini_entries.size();
+}
+
+/**
+ *  Apply a callback to each php.ini variable
+ *
+ *  The callback will be called with a reference to the ini variable.
+ *
+ *  @param  callback
+ */
+void ExtensionImpl::iniVariables(const std::function<void(Ini &ini)> &callback)
+{
+    // loop through the entries and apply the callback to each one
+    for (auto ini : _ini_entries) callback(*ini);
 }
 
 /**
