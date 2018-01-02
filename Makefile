@@ -42,8 +42,8 @@ INSTALL_LIB				=	${INSTALL_PREFIX}/lib
 #   Otherwise only release verions changes. (version is MAJOR.MINOR.RELEASE)
 #
 
-SONAME					=	1.5
-VERSION					=	1.5.8
+SONAME					=	1.6
+VERSION					=	1.6.0
 
 
 #
