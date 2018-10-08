@@ -1055,25 +1055,64 @@ int ClassImpl::hasProperty(zval *object, zval *name, int has_set_exists, const z
         ClassImpl *impl = self(entry);
         ClassBase *meta = impl->_base;
 
-        // convert the name to a Value object
-        Value key(name);
+        // Watch out: the Zend engine is doing weird stuff here, the "name" parameter 
+        // that is passed to this method does not always have the "refcount" member
+        // initialized (especially not when the call comes from property_exists()), 
+        // which makes it impossible to call Value{name} to convert name to a Php::Value
+        if (Z_TYPE_P(name) == IS_STRING)
+        {
+            // we need a std::string for the lookup in the std::map
+            std::string property(Z_STRVAL_P(name), Z_STRLEN_P(name));
+            
+            // check if this is a callback property
+            if (impl->_properties.find(property) != impl->_properties.end()) return true;
+            
+            // we need the to pass a Php::Value to pass to the __isset() and _get() methods
+            Value propvalue(property);
 
-        // check if this is a callback property
-        if (impl->_properties.find(key) != impl->_properties.end()) return true;
+            // call the C++ object
+            if (!meta->callIsset(base, propvalue)) return false;
 
-        // call the C++ object
-        if (!meta->callIsset(base, key)) return false;
+            // property exists, but what does the user want to know
+            if (has_set_exists == 2) return true;
 
-        // property exists, but what does the user want to know
-        if (has_set_exists == 2) return true;
+            // we have to retrieve the property
+            Value value = meta->callGet(base, propvalue);
 
-        // we have to retrieve the property
-        Value value = meta->callGet(base, key);
+            // should we check on NULL?
+            switch (has_set_exists) {
+            case 0:     return value.type() != Type::Null;
+            default:    return value.boolValue();
+            }
+        }
+        else
+        {
+            // the passed parameter was not a string, which is odd, but there could be a
+            // scenario where the method is called with an object and the caller expect us
+            // to convert the object back to a string (does this happen!?). Anyway: the call
+            // does certainly not come from the property_exists() function because that function
+            // already forces the param to be a string, and since the call does not come from
+            // property_exists(), we also do not have to be extra careful in converting
+            // the name into a Value object and can do that right now:
+            Value property(name);
 
-        // should we check on NULL?
-        switch (has_set_exists) {
-        case 0:     return value.type() != Type::Null;
-        default:    return value.boolValue();
+            // check if this is a callback property
+            if (impl->_properties.find(property) != impl->_properties.end()) return true;
+
+            // call the C++ object
+            if (!meta->callIsset(base, property)) return false;
+
+            // property exists, but what does the user want to know
+            if (has_set_exists == 2) return true;
+
+            // we have to retrieve the property
+            Value value = meta->callGet(base, property);
+
+            // should we check on NULL?
+            switch (has_set_exists) {
+            case 0:     return value.type() != Type::Null;
+            default:    return value.boolValue();
+            }
         }
     }
     catch (const NotImplemented &exception)
