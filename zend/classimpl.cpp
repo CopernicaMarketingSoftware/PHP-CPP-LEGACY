@@ -900,22 +900,48 @@ zval *ClassImpl::readProperty(zval *object, zval *name, int type, const zend_lit
     // the exception we know if the object was implemented by the user or not
     try
     {
-        // convert name to a Value object
-        Value key(name);
-
-        // is it a property with a callback?
-        auto iter = impl->_properties.find(key);
-
-        // was it found?
-        if (iter == impl->_properties.end())
+        // Watch out: the Zend engine is doing weird stuff here, the "name" parameter 
+        // that is passed to this method does not always have the "refcount" member
+        // initialized, which makes it impossible to call Value{name} to convert name to a Php::Value
+        if (Z_TYPE_P(name) == IS_STRING)
         {
-            // retrieve value from the __get method
-            return toZval(meta->callGet(base, key), type);
+            // we need a std::string for the lookup in the std::map
+            std::string key(Z_STRVAL_P(name), Z_STRLEN_P(name));
+
+            // is it a property with a callback?
+            auto iter = impl->_properties.find(key);
+    
+            // was it found?
+            if (iter == impl->_properties.end())
+            {
+                // retrieve value from the __get method
+                return toZval(meta->callGet(base, key), type);
+            }
+            else
+            {
+                // get the value
+                return toZval(iter->second->get(base), type);
+            }
         }
         else
         {
-            // get the value
-            return toZval(iter->second->get(base), type);
+            // convert name to a Value object
+            Value key(name);
+    
+            // is it a property with a callback?
+            auto iter = impl->_properties.find(key);
+    
+            // was it found?
+            if (iter == impl->_properties.end())
+            {
+                // retrieve value from the __get method
+                return toZval(meta->callGet(base, key), type);
+            }
+            else
+            {
+                // get the value
+                return toZval(iter->second->get(base), type);
+            }
         }
     }
     catch (const NotImplemented &exception)
@@ -974,25 +1000,54 @@ void ClassImpl::writeProperty(zval *object, zval *name, zval *value, const zend_
     // we know for sure that the user has not overridden the __set method
     try
     {
-        // wrap the name
-        Value key(name);
-
-        // check if the property has a callback
-        auto iter = impl->_properties.find(key);
-
-        // is it set?
-        if (iter == impl->_properties.end())
+        // Watch out: the Zend engine is doing weird stuff here, the "name" parameter 
+        // that is passed to this method does not always have the "refcount" member
+        // initialized, which makes it impossible to call Value{name} to convert name to a Php::Value
+        if (Z_TYPE_P(name) == IS_STRING)
         {
-            // use the __set method
-            meta->callSet(base, key, value);
+            // we need a std::string for the lookup in the std::map
+            std::string key(Z_STRVAL_P(name), Z_STRLEN_P(name));
+
+            // is it a property with a callback?
+            auto iter = impl->_properties.find(key);
+
+            // is it set?
+            if (iter == impl->_properties.end())
+            {
+                // use the __set method
+                meta->callSet(base, key, value);
+            }
+            else
+            {
+                // check if it could be set
+                if (iter->second->set(base, value)) return;
+    
+                // read-only property
+                zend_error(E_ERROR, "Unable to write to read-only property %s", key.c_str());
+            }
         }
         else
         {
-            // check if it could be set
-            if (iter->second->set(base, value)) return;
-
-            // read-only property
-            zend_error(E_ERROR, "Unable to write to read-only property %s", (const char *)key);
+            // wrap the name
+            Value key(name);
+    
+            // check if the property has a callback
+            auto iter = impl->_properties.find(key);
+    
+            // is it set?
+            if (iter == impl->_properties.end())
+            {
+                // use the __set method
+                meta->callSet(base, key, value);
+            }
+            else
+            {
+                // check if it could be set
+                if (iter->second->set(base, value)) return;
+    
+                // read-only property
+                zend_error(E_ERROR, "Unable to write to read-only property %s", (const char *)key);
+            }
         }
     }
     catch (const NotImplemented &exception)
