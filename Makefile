@@ -43,7 +43,7 @@ INSTALL_LIB				=	${INSTALL_PREFIX}/lib
 #
 
 SONAME					=	1.6
-VERSION					=	1.6.0
+VERSION					=	1.6.2
 
 
 #
