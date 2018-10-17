@@ -1219,17 +1219,37 @@ void ClassImpl::unsetProperty(zval *object, zval *member, const zend_literal *ke
         // we need the C++ class meta-information object
         ClassImpl *impl = self(entry);
 
-        // property name
-        Value name(member);
-
-        // is this a callback property?
-        auto iter = impl->_properties.find(name);
-
-        // if the property does not exist, we forward to the __unset
-        if (iter == impl->_properties.end()) impl->_base->callUnset(ObjectImpl::find(object TSRMLS_CC)->object(), member);
-
-        // callback properties cannot be unset
-        zend_error(E_ERROR, "Property %s can not be unset", (const char *)name);
+        // Watch out: the Zend engine is doing weird stuff here, the "name" parameter 
+        // that is passed to this method does not always have the "refcount" member
+        // initialized which makes it impossible to call Value{name} to convert name to a Php::Value
+        if (Z_TYPE_P(member) == IS_STRING)
+        {
+            // we need a std::string for the lookup in the std::map
+            std::string name(Z_STRVAL_P(member), Z_STRLEN_P(member));
+    
+            // is this a callback property?
+            auto iter = impl->_properties.find(name);
+    
+            // if the property does not exist, we forward to the __unset
+            if (iter == impl->_properties.end()) impl->_base->callUnset(ObjectImpl::find(object TSRMLS_CC)->object(), member);
+    
+            // callback properties cannot be unset
+            zend_error(E_ERROR, "Property %s can not be unset", name.c_str());
+        }
+        else
+        {
+            // property name
+            Value name(member);
+    
+            // is this a callback property?
+            auto iter = impl->_properties.find(name);
+    
+            // if the property does not exist, we forward to the __unset
+            if (iter == impl->_properties.end()) impl->_base->callUnset(ObjectImpl::find(object TSRMLS_CC)->object(), member);
+    
+            // callback properties cannot be unset
+            zend_error(E_ERROR, "Property %s can not be unset", (const char *)name);
+        }
     }
     catch (const NotImplemented &exception)
     {
