@@ -1605,6 +1605,7 @@ zend_class_entry *ClassImpl::initialize(ClassBase *base, const std::string &pref
 
     // set our comment in the actual class entry
     _entry->info.user.doc_comment = _self;
+    _entry->info.user.doc_comment_len = 0;
 
 #else
 
