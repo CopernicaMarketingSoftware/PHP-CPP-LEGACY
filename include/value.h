@@ -15,7 +15,7 @@
  *  this class.
  *
  *  @author Emiel Bruijntjes <emiel.bruijntjes@copernica.com>
- *  @copyright 2013 - 2016 Copernica BV
+ *  @copyright 2013 - 2019 Copernica BV
  */
 
 /**
@@ -1211,6 +1211,7 @@ protected:
     friend class ZendCallable;
     friend class Script;
     friend class ConstantImpl;
+    friend class Stream;
 
     /**
      *  Friend functions which have to access that zval directly
