@@ -70,6 +70,7 @@
 #include "../include/version.h"
 #include "../include/inivalue.h"
 #include "../include/ini.h"
+#include "../include/throwable.h"
 #include "../include/exception.h"
 #include "../include/fatalerror.h"
 #include "../include/streams.h"

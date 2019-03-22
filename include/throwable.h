@@ -1,9 +1,10 @@
 /**
- *  Exception.h
- *  Implementation of Php Exceptions.
+ *  Throwable
+ *
+ *  Base class for Php Exceptions.
  *
  *  @author Jasper van Eck <jasper.vaneck@copernica.com>
- *  @copyright 2013, 2014 Copernica BV
+ *  @copyright 2013 - 2019 Copernica BV
  */
 #include <exception>
 
@@ -15,7 +16,7 @@ namespace Php {
 /**
  *  Class definition
  */
-class PHPCPP_EXPORT Exception : public std::exception
+class PHPCPP_EXPORT Throwable : public std::exception
 {
 private:
     /**
@@ -36,17 +37,18 @@ private:
      */
     bool _processed = false;
 
-public:
+protected:
     /**
      *  Constructor
      *  @param  &string
      */
-    Exception(const std::string &message, int code = 0) : std::exception(), _message(message), _code(code) {}
+    Throwable(const std::string &message, int code = 0) : std::exception(), _message(message), _code(code) {}
 
+public:
     /**
      *  Destructor
      */
-    virtual ~Exception() throw() {}
+    virtual ~Throwable() throw() {}
 
     /**
      *  Overridden what method
