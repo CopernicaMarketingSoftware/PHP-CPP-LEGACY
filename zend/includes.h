@@ -74,7 +74,7 @@
 #include "../include/fatalerror.h"
 #include "../include/streams.h"
 #include "../include/type.h"
-#include "../include/errors.h"
+#include "../include/message.h"
 #include "../include/hashparent.h"
 #include "../include/value.h"
 #include "../include/valueiterator.h"
