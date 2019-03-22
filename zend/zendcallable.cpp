@@ -82,7 +82,7 @@ Parameters ZendCallable::parameters(int provided, struct _zval_struct *this_ptr)
  *
  *  @param  exception   The exception to handle
  */
-void ZendCallable::handle(Exception &exception)
+void ZendCallable::handle(Throwable &exception)
 {
     // we need the tsrm_ls variable
     TSRMLS_FETCH();

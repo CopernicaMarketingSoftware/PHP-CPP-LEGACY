@@ -32,12 +32,12 @@ Object::Object(const char *name, Base *base) : Value()
 
         // this is a brand new object that should be allocated, the C++ instance
         // is already there (created by the extension) but it is not yet stored
-        // in PHP, find out the classname first (we use the FatalError class
+        // in PHP, find out the classname first (we use the Error class
         // here because this function is called from C++ context, and zend_error()
         // would cause a longjmp() which does not clean up C++ objects created
         // by the extension).
         auto *entry = zend_fetch_class(name, ::strlen(name), ZEND_FETCH_CLASS_SILENT TSRMLS_CC);
-        if (!entry) throw FatalError(std::string("Unknown class name ") + name);
+        if (!entry) throw Error(std::string("Unknown class name ") + name);
 
         // construct an implementation (this will also set the implementation
         // member in the base object), this is a self-destructing object that
@@ -117,12 +117,12 @@ bool Object::instantiate(const char *name)
     // we need the tsrm_ls variable
     TSRMLS_FETCH();
 
-    // convert the name into a class_entry (we use the FatalError class
+    // convert the name into a class_entry (we use the Error class
     // here because this function is called from C++ context, and zend_error()
     // would cause a longjmp() which does not clean up C++ objects created
     // by the extension).
     auto *entry = zend_fetch_class(name, ::strlen(name), ZEND_FETCH_CLASS_SILENT TSRMLS_CC);
-    if (!entry) throw FatalError(std::string("Unknown class name ") + name);
+    if (!entry) throw Error(std::string("Unknown class name ") + name);
 
     // initiate the zval (which was already allocated in the base constructor)
     object_init_ex(_val, entry);

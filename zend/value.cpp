@@ -192,7 +192,7 @@ Value::Value(const Base *object)
     auto *impl = object->implementation();
 
     // do we have a handle?
-    if (!impl) throw FatalError("Assigning an unassigned object to a variable");
+    if (!impl) throw Error("Assigning an unassigned object to a variable");
 
     // make a regular zval, and set it to an object
     MAKE_STD_ZVAL(_val);
@@ -1068,7 +1068,7 @@ Value &Value::setType(Type type)
     SEPARATE_ZVAL_IF_NOT_REF(&_val);
 
     // run the conversion, when it fails we throw a fatal error which will
-    // in the end result in a zend_error() call. This FatalError class is necessary
+    // in the end result in a zend_error() call. This Error class is necessary
     // because a direct call to zend_error() will do a longjmp() which may not
     // clean up the C++ objects created by the extension
     switch (type) {
@@ -1079,10 +1079,10 @@ Value &Value::setType(Type type)
     case Type::Array:           convert_to_array(_val); break;
     case Type::Object:          convert_to_object(_val); break;
     case Type::String:          convert_to_string(_val); break;
-    case Type::Resource:        throw FatalError("Resource types can not be handled by the PHP-CPP library"); break;
-    case Type::Constant:        throw FatalError("Constant types can not be assigned to a PHP-CPP library variable"); break;
-    case Type::ConstantArray:   throw FatalError("Constant types can not be assigned to a PHP-CPP library variable"); break;
-    case Type::Callable:        throw FatalError("Callable types can not be assigned to a PHP-CPP library variable"); break;
+    case Type::Resource:        throw Error("Resource types can not be handled by the PHP-CPP library"); break;
+    case Type::Constant:        throw Error("Constant types can not be assigned to a PHP-CPP library variable"); break;
+    case Type::ConstantArray:   throw Error("Constant types can not be assigned to a PHP-CPP library variable"); break;
+    case Type::Callable:        throw Error("Callable types can not be assigned to a PHP-CPP library variable"); break;
     }
 
     // done

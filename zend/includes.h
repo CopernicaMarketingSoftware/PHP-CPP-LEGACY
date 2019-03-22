@@ -72,7 +72,7 @@
 #include "../include/ini.h"
 #include "../include/throwable.h"
 #include "../include/exception.h"
-#include "../include/fatalerror.h"
+#include "../include/error.h"
 #include "../include/streams.h"
 #include "../include/type.h"
 #include "../include/message.h"
