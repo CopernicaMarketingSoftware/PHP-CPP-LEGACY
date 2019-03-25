@@ -21,7 +21,7 @@ namespace Php {
 /**
  *  Class definition
  */
-class Exception : public Throwable
+class PHPCPP_EXPORT Exception : public Throwable
 {
 public:
     /**
