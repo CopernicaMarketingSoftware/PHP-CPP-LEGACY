@@ -49,7 +49,7 @@ Value set_exception_handler(const std::function<Value(Parameters &params)> &hand
 /**
  *  Set a std::function as a php error handler
  */
-Value set_error_handler(const std::function<Value(Parameters &params)> &handler, Error error)
+Value set_error_handler(const std::function<Value(Parameters &params)> &handler, Message message)
 {
     // we need the tsrm_ls variable
     TSRMLS_FETCH();
@@ -71,7 +71,7 @@ Value set_error_handler(const std::function<Value(Parameters &params)> &handler,
 
     // copy our zval into the user_error_handler
     MAKE_COPY_ZVAL(&value, EG(user_error_handler));
-    EG(user_error_handler_error_reporting) = (int) error;
+    EG(user_error_handler_error_reporting) = (int) message;
 
     // return the original handler
     return output;
@@ -80,7 +80,7 @@ Value set_error_handler(const std::function<Value(Parameters &params)> &handler,
 /**
  *  Modify the error reporting level, will return the old error reporting level.
  */
-Value error_reporting(Error error)
+Value error_reporting(Message message)
 {
     // we need the tsrm_ls variable
     TSRMLS_FETCH();
@@ -92,7 +92,7 @@ Value error_reporting(Error error)
     char str[21];
 
     // write the level into this buffer
-    int size = sprintf(str, "%d", (int) error);
+    int size = sprintf(str, "%d", (int) message);
 
     // if we failed for some reason we bail out
     if (size < 0) return false;

@@ -148,7 +148,7 @@ void ClassImpl::callMethod(INTERNAL_FUNCTION_PARAMETERS)
         // because of the two-step nature, we are going to report the error ourselves
         zend_error(E_ERROR, "Undefined method %s", name);
     }
-    catch (Exception &exception)
+    catch (Throwable &exception)
     {
         // process the exception
         process(exception TSRMLS_CC);
@@ -194,7 +194,7 @@ void ClassImpl::callInvoke(INTERNAL_FUNCTION_PARAMETERS)
         // because of the two-step nature, we are going to report the error ourselves
         zend_error(E_ERROR, "Function name must be a string");
     }
-    catch (Exception &exception)
+    catch (Throwable &exception)
     {
         // process the exception
         process(exception TSRMLS_CC);
@@ -456,7 +456,7 @@ int ClassImpl::compare(zval *val1, zval *val2 TSRMLS_DC)
         // call default
         return std_object_handlers.compare_objects(val1, val2 TSRMLS_CC);
     }
-    catch (Exception &exception)
+    catch (Throwable &exception)
     {
         // a Php::Exception was thrown by the extension __compare function,
         // pass this on to user space
@@ -527,7 +527,7 @@ int ClassImpl::cast(zval *val, zval *retval, int type TSRMLS_DC)
         // call default
         return std_object_handlers.cast_object(val, retval, type TSRMLS_CC);
     }
-    catch (Exception &exception)
+    catch (Throwable &exception)
     {
         // pass on the exception to php userspace
         process(exception TSRMLS_CC);
@@ -614,7 +614,7 @@ int ClassImpl::countElements(zval *object, long *count TSRMLS_DC)
             // done
             return SUCCESS;
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // process the exception
             process(exception TSRMLS_CC);
@@ -677,7 +677,7 @@ zval *ClassImpl::readDimension(zval *object, zval *offset, int type TSRMLS_DC)
             // ArrayAccess is implemented, call function
             return toZval(arrayaccess->offsetGet(offset), type);
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // process the exception (send it to user space)
             process(exception TSRMLS_CC);
@@ -722,7 +722,7 @@ void ClassImpl::writeDimension(zval *object, zval *offset, zval *value TSRMLS_DC
             // set the value
             arrayaccess->offsetSet(offset, value);
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // process the exception (send it to user space
             process(exception TSRMLS_CC);
@@ -771,7 +771,7 @@ int ClassImpl::hasDimension(zval *object, zval *member, int check_empty TSRMLS_D
             // the user wants to know if the property is empty
             return empty(arrayaccess->offsetGet(member));
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // process the exception (send it to user space)
             process(exception TSRMLS_CC);
@@ -814,7 +814,7 @@ void ClassImpl::unsetDimension(zval *object, zval *member TSRMLS_DC)
             // remove the member
             arrayaccess->offsetUnset(member);
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // process the exception (send it to user space)
             process(exception TSRMLS_CC);
@@ -956,7 +956,7 @@ zval *ClassImpl::readProperty(zval *object, zval *name, int type, const zend_lit
         return std_object_handlers.read_property(object, name, type, key TSRMLS_CC);
 #endif
     }
-    catch (Exception &exception)
+    catch (Throwable &exception)
     {
         // user threw an exception in its magic method
         // implementation, send it to user space
@@ -1062,7 +1062,7 @@ void ClassImpl::writeProperty(zval *object, zval *name, zval *value, const zend_
         std_object_handlers.write_property(object, name, value, key TSRMLS_CC);
 #endif
     }
-    catch (Exception &exception)
+    catch (Throwable &exception)
     {
         // user threw an exception in its magic method
         // implementation, send it to user space
@@ -1182,7 +1182,7 @@ int ClassImpl::hasProperty(zval *object, zval *name, int has_set_exists, const z
         return std_object_handlers.has_property(object, name, has_set_exists, key TSRMLS_CC);
 #endif
     }
-    catch (Exception &exception)
+    catch (Throwable &exception)
     {
         // user threw an exception in its magic method
         // implementation, send it to user space
@@ -1263,7 +1263,7 @@ void ClassImpl::unsetProperty(zval *object, zval *member, const zend_literal *ke
         std_object_handlers.unset_property(object, member, key TSRMLS_CC);
 #endif
     }
-    catch (Exception &exception)
+    catch (Throwable &exception)
     {
         // user threw an exception in its magic method
         // implementation, send it to user space
@@ -1297,7 +1297,7 @@ void ClassImpl::destructObject(zend_object *object, zend_object_handle handle TS
         // fallback on the default destructor call
         zend_objects_destroy_object(object, handle TSRMLS_CC);
     }
-    catch (Exception &exception)
+    catch (Throwable &exception)
     {
         // a regular Php::Exception was thrown by the extension, pass it on
         // to PHP user space
@@ -1382,7 +1382,7 @@ zend_object_iterator *ClassImpl::getIterator(zend_class_entry *entry, zval *obje
         // return the implementation
         return iterator->implementation();
     }
-    catch (Exception &exception)
+    catch (Throwable &exception)
     {
         // user threw an exception in its method
         // implementation, send it to user space
@@ -1419,7 +1419,7 @@ int ClassImpl::serialize(zval *object, unsigned char **buffer, zend_uint *buf_le
         *buffer = (unsigned char*)estrndup(value.c_str(), value.size());
         *buf_len = value.size();
     }
-    catch (Exception &exception)
+    catch (Throwable &exception)
     {
         // user threw an exception in its method
         // implementation, send it to user space
@@ -1456,7 +1456,7 @@ int ClassImpl::unserialize(zval **object, zend_class_entry *entry, const unsigne
         // call the unserialize method on it
         serializable->unserialize((const char *)buffer, buf_len);
     }
-    catch (Exception &exception)
+    catch (Throwable &exception)
     {
         // user threw an exception in its method
         // implementation, send it to user space

@@ -1,8 +1,8 @@
 /**
- *  FatalError.cpp
+ *  Error.cpp
  * 
  *  @author Emiel Bruijntjes <emiel.bruijntjes@copernica.com>
- *  @copyright 2014 Copernica BV
+ *  @copyright 2014 - 2019 Copernica BV
  */
 #include "includes.h"
 
@@ -15,7 +15,7 @@ namespace Php {
  *  Report this error as a fatal error
  *  @return bool
  */
-bool FatalError::report() const
+bool Error::report() const
 {
     // report the error
     zend_error(E_ERROR, "%s", what());

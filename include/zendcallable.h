@@ -62,7 +62,7 @@ private:
      *
      *  @param  exception   The exception to handle
      */
-    static void handle(Exception &exception);
+    static void handle(Throwable &exception);
 
     /**
      *  Yield (return) the given value
@@ -94,7 +94,7 @@ public:
             // there is no return value, so we just return null
             yield(return_value, nullptr);
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // handle the exception
             handle(exception);
@@ -119,7 +119,7 @@ public:
             // there is no return value, so we just return null
             yield(return_value, nullptr);
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // handle the exception
             handle(exception);
@@ -144,7 +144,7 @@ public:
             // store the return value in the return_value
             yield(return_value, std::move(result));
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // handle the exception
             handle(exception);
@@ -169,7 +169,7 @@ public:
             // store the return value in the return_value
             yield(return_value, std::move(result));
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // handle the exception
             handle(exception);
@@ -200,7 +200,7 @@ public:
             // there is no return value, so we just reutrn null
             yield(return_value, nullptr);
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // handle the exception
             handle(exception);
@@ -231,7 +231,7 @@ public:
             // there is no return value, so we just return null
             yield(return_value, nullptr);
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // handle the exception
             handle(exception);
@@ -262,7 +262,7 @@ public:
             // store the return value in the return_value
             yield(return_value, std::move(result));
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // handle the exception
             handle(exception);
@@ -293,7 +293,7 @@ public:
             // store the return value in the return_value
             yield(return_value, std::move(result));
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // handle the exception
             handle(exception);
@@ -318,7 +318,7 @@ public:
             // there is no return value, so we just return null
             yield(return_value, nullptr);
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // handle the exception
             handle(exception);
@@ -343,7 +343,7 @@ public:
             // store the return value in the return_value
             yield(return_value, std::move(result));
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // handle the exception
             handle(exception);
@@ -374,7 +374,7 @@ public:
             // there is no return value, so we just return null
             yield(return_value, nullptr);
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // handle the exception
             handle(exception);
@@ -405,7 +405,7 @@ public:
             // store the return value in the return_value
             yield(return_value, std::move(result));
         }
-        catch (Exception &exception)
+        catch (Throwable &exception)
         {
             // handle the exception
             handle(exception);
